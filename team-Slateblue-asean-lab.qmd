@@ -157,7 +157,6 @@ meat$animal_factor <- factor(meat$animal)
 is.factor(meat$animal_factor)
 
 # 3.4.2 Check levels and alphabetical order
-|
 levels(meat$animal_factor)
 animal_rank <- min_rank(levels(meat$animal_factor))
 animal_rank

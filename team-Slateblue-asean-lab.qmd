@@ -1,0 +1,215 @@
+# Prediction
+## Gerald
+Country: Singapore (character)
+Animal: Chicken (character)
+Year: 2025 (numeric)
+production: 5.123 (numeric)
+Pred-rows: 10000
+pred-cols: 10
+
+## Jun kiat
+Country: Singapore (character)
+Animal: Pig (character)
+Year: 2022 (numeric)
+production: 35.8 (numeric)
+Pred-rows: 200
+pred-cols: 20
+
+## Adam
+Country: Singapore (character)
+Animal: Beef and buffalo (character)
+Year: 2019 (numeric)
+production: 50 (numeric)
+Pred-rows: 100
+pred-cols: 10
+
+## Jia Jia
+Country: Singapore (character)
+Animal: Beef (character)
+Year: 2018 (numeric)
+production: 21.2 (numeric)
+Pred-rows: 130
+pred-cols: 4
+
+## Bao Quan
+Country: Singapore (character)
+Animal: Pork (character)
+Year: 2020 (numeric)
+production: 24  (numeric)
+Pred-rows: 145
+pred-cols: 5
+
+
+# Code
+
+```{r}
+#| label: setup-meat
+#| message: false
+library(tidyverse)
+meat <- read_csv("meat.csv")
+```
+
+```{r}
+# Part 3.1
+class(meat$country)
+class(meat$animal)
+class(meat$year)
+class(meat$production)
+
+nrow(meat)
+ncol(meat)
+
+length(unique(meat$country)) # means there is 10 countries
+length(unique(meat$animal)) # means there is 4 animals
+length(unique(meat$year)) # means there is 4 years
+length(unique(meat$production)) # means there is 155 unique production values
+
+head(meat)
+tail(meat)
+
+# Explaination:
+```
+
+```{r}
+# Part 3.2
+
+# check if there is any NA values in the dataset
+any(is.na(meat$production))
+
+# Create logical mask for missing production values and list in table where prodcution is NA
+missing_production <- is.na(meat$production)
+meat[missing_production, c("country", "animal", "year")]
+
+# Verifier: Check numbers of rows before and after removing missing values
+nrow(meat)
+nrow(meat[!is.na(meat$production), ])
+nrow(meat) - nrow(meat[!is.na(meat$production), ])
+
+# Total ASEAN production WITHOUT removing NA values
+sum(meat$production)
+
+# Total ASEAN production WITH removing NA values
+sum(meat$production, na.rm = TRUE)
+
+# Explaination:
+```
+
+```{r}
+# Part 3.3
+
+# 3.3.1
+# Filter the dataset to include only rows where:
+# year is 2020 and animal type is poultry
+poultry_2020 <- meat[meat$year == 2020 & meat$animal == "poultry", ]
+
+# Find the maximum poultry production value in 2020
+max_poultry <- max(poultry_2020$production)
+
+# Display the row(s) where production equals the maximum value
+# This identifies the country with the highest poultry production in 2020
+poultry_2020[poultry_2020$production == max_poultry, ]
+
+# Verifier: rank countries by poultry production in 2020
+poultry_2020[order(poultry_2020$production, decreasing = TRUE), ]
+
+
+# 3.3.2 Second-highest poultry production in 2020
+
+poultry_ranked <- poultry_2020[
+  order(poultry_2020$production, decreasing = TRUE),
+]
+poultry_ranked[2, ]
+
+# 3.3.3 Countries with more poultry than pig in 2020
+
+# Filter the dataset to include only poultry production data for 2020
+poultry_2020 <- meat[meat$year == 2020 & meat$animal == "poultry", ]
+
+# Filter the dataset to include only pig production data for 2020
+pig_2020 <- meat[meat$year == 2020 & meat$animal == "pig", ]
+
+# Sort the poultry dataset alphabetically by country
+# so the country order matches the pig dataset
+poultry_2020 <- poultry_2020[order(poultry_2020$country), ]
+
+# Sort the pig dataset alphabetically by country
+pig_2020 <- pig_2020[order(pig_2020$country), ]
+
+# Check whether both country vectors are in the same order
+identical(poultry_2020$country, pig_2020$country)
+
+# Compare poultry and pig production values country by country
+# TRUE means poultry production is greater than pig production
+more_poultry_than_pig <- poultry_2020$production > pig_2020$production
+
+# Count how many countries produced more poultry than pig
+sum(more_poultry_than_pig)
+
+# Display the countries where poultry production exceeded pig production
+# along with their poultry production values
+poultry_2020[more_poultry_than_pig, c("country", "production")]
+```
+
+```{r}
+# Part 3.4
+# 3.4.1 Convert animal to factor
+meat$animal_factor <- factor(meat$animal)
+is.factor(meat$animal_factor)
+
+# 3.4.2 Check levels and alphabetical order
+|
+levels(meat$animal_factor)
+animal_rank <- min_rank(levels(meat$animal_factor))
+animal_rank
+identical(levels(meat$animal_factor), sort(levels(meat$animal_factor)))
+
+# 3.4.4 Collapse factor levels
+
+library(forcats)
+
+meat$color <- fct_collapse(
+  meat$animal_factor,
+  red = c("beef and buffalo", "mutton and goat", "pig"),
+  white = "poultry"
+)
+
+levels(meat$color)
+
+# 3.4.4
+# No, meat$animal_factor should not be an ordered factor because the animal categories do not have a natural ranking. They are just names of different animal groups, not values that go from low to high.
+```
+
+```{r}
+# Part 3.5
+
+# Load dplyr package for recode_values()
+library(dplyr)
+
+# Create a new column called iso3
+# Map each country name to its ISO 3-letter country code
+
+meat$iso3 <- dplyr::recode(
+  meat$country,
+  "Brunei Darussalam" = "BRN",
+  "Cambodia" = "KHM",
+  "Indonesia" = "IDN",
+  "Lao PDR" = "LAO",
+  "Malaysia" = "MYS",
+  "Myanmar" = "MMR",
+  "Philippines" = "PHL",
+  "Singapore" = "SGP",
+  "Thailand" = "THA",
+  "Viet Nam" = "VNM",
+  .default = NA
+)
+
+# Check whether the iso3 column contains any missing values
+any(is.na(meat$iso3))
+
+# Display the unique country and ISO code pairs
+# to confirm there are exactly 10 valid mappings
+unique(meat[, c("country", "iso3")])
+
+# Count the number of unique country-code pairs
+nrow(unique(meat[, c("country", "iso3")]))
+```

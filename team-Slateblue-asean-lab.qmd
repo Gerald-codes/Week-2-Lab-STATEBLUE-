@@ -188,19 +188,18 @@ library(dplyr)
 # Create a new column called iso3
 # Map each country name to its ISO 3-letter country code
 
-meat$iso3 <- dplyr::recode(
+meat$iso3 <- recode_values(
   meat$country,
-  "Brunei Darussalam" = "BRN",
-  "Cambodia" = "KHM",
-  "Indonesia" = "IDN",
-  "Lao PDR" = "LAO",
-  "Malaysia" = "MYS",
-  "Myanmar" = "MMR",
-  "Philippines" = "PHL",
-  "Singapore" = "SGP",
-  "Thailand" = "THA",
-  "Viet Nam" = "VNM",
-  .default = NA
+  "Brunei Darussalam" ~ "BRN",
+  "Cambodia" ~ "KHM",
+  "Indonesia" ~ "IDN",
+  "Lao PDR" ~ "LAO",
+  "Malaysia" ~ "MYS",
+  "Myanmar" ~ "MMR",
+  "Philippines" ~ "PHL",
+  "Singapore" ~ "SGP",
+  "Thailand" ~ "THA",
+  "Viet Nam" ~ "VNM"
 )
 
 # Check whether the iso3 column contains any missing values

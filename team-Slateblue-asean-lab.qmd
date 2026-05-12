@@ -68,6 +68,8 @@ head(meat)
 tail(meat)
 
 # Explaination:
+# The actual output mostly matched our predictions. The dataset contains country and animal as character columns, year as a numeric or integer column, and production as a numeric column. The number of rows and columns matched most of our expected dataset structure especially number of rows.
+
 ```
 
 ```{r}
@@ -92,6 +94,7 @@ sum(meat$production)
 sum(meat$production, na.rm = TRUE)
 
 # Explaination:
+# Using `na.rm = TRUE` assumes that it is acceptable to exclude the missing production values from the total. This is justifiable if our goal is to calculate the total production from the available reported data only. However, it may not represent the true total ASEAN production because the missing `mutton and goat` values should still contribute to the real total if they were known.
 ```
 
 ```{r}
@@ -148,6 +151,9 @@ sum(more_poultry_than_pig)
 # Display the countries where poultry production exceeded pig production
 # along with their poultry production values
 poultry_2020[more_poultry_than_pig, c("country", "production")]
+
+# Explanation
+# We filtered the dataset to poultry production in 2020 and used `max()` to identify the highest production value. We also used ranking as a second method to verify the result. Before comparing poultry and pig production, we checked that the country vectors were in the same order using `identical()`.
 ```
 
 ```{r}
@@ -162,8 +168,10 @@ animal_rank <- min_rank(levels(meat$animal_factor))
 animal_rank
 identical(levels(meat$animal_factor), sort(levels(meat$animal_factor)))
 
-# 3.4.4 Collapse factor levels
+# 3.4.3
+# No, meat$animal_factor should not be an ordered factor because the animal categories do not have a natural ranking. They are just names of different animal groups, not values that go from low to high.
 
+# 3.4.4 Collapse factor levels
 library(forcats)
 
 meat$color <- fct_collapse(
@@ -174,8 +182,8 @@ meat$color <- fct_collapse(
 
 levels(meat$color)
 
-# 3.4.4
-# No, meat$animal_factor should not be an ordered factor because the animal categories do not have a natural ranking. They are just names of different animal groups, not values that go from low to high.
+# Explanation
+# We converted `animal` into a factor because it represents categorical data. The factor should not be ordered because animal types do not have a natural ranking. We then collapsed the animal categories into two broader groups: red meat and white meat.
 ```
 
 ```{r}
@@ -210,4 +218,7 @@ unique(meat[, c("country", "iso3")])
 
 # Count the number of unique country-code pairs
 nrow(unique(meat[, c("country", "iso3")]))
+
+# Explanation
+# We added an ISO 3-letter country-code column to make the country names easier to reference. We checked that the new `iso3` column contained no missing values and confirmed that there were ten unique country codes, matching the ten ASEAN countries in the dataset.
 ```

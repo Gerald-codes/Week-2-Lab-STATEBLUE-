@@ -2,7 +2,7 @@
 title: "Week 03 Lab: R Practice Using ASEAN Data"
 subtitle: "ASEAN Meat Production 2018–2021"
 author: "Team SLATEBLUE"
-date: "2026-05-12"
+date: "2026-05-19"
 format:
   html:
     toc: true
@@ -19,76 +19,97 @@ execute:
 ---
 
 # Prediction Before Running Code
-**Gerald**  
-Country: Singapore (character)
-Animal: Chicken (character)
-Year: 2025 (numeric)
-production: 5.123 (numeric)
-Pred-rows: 10000
-pred-cols: 10
+### Gerald  
+**a. Columns and classes:**
 
-**Jun kiat**  
+- country: character
+- animal: character
+- year: numeric
+- production: numeric
 
-a. columns and classes
+**b. Rows and why**
+
+- around 176 rows as there are 11 countries, 4 types of meat , 4 years
+
+**c. Why is current layout not tidy**
+
+- The order of the rows are not in the right flow and are not consistent in terms of formating style which cause it to be difficult to analyze and untidy.
+
+
+### Jun kiat  
+**a. Columns and classes**
+
 - country: char
 - production_group: char
 - animal_type: char
 - year: int
 - production: int
 
-b. rows and why 
+**b. Rows and why**
+
 - around 160, cause 10 country * 4 types of meat * 4
 
-c. why is current layout not tidy
+**c. Why is current layout not tidy**
+
 - dont need ASEAN, its a sum of the years production
 - need production grp so its scalable in the future, for example -> fish
 - empty rows
 
-**Adam**  
-a. Columns and classes: 
-- couuntry (character)
+### Adam
+**a. Columns and classes**
+
+- country (character)
 - animal (character)
 - year (numeric)
 - production (numeric)
 
-b. rows and why 
+**b. Rows and why**
+
 - 220 as there are 11 countries, 5 meat categories, 4 years
 
-c. why is current layout not tidy
+**c. Why is current layout not tidy**
+
 -The first column mixes different types of information.
 
-**Jia Jia**  
-a. columns and classes
+### Jia Jia 
+**a. Columns and classes**
+
 - country: character
 - animal: character
 - year: numeric
 - production: numeric
 
-b. rows and why 
-160 rows because there are 10 ASEAN countries, 4 animal categories, and 4 years from 2018 to 2021
+**b. Rows and why**
 
-c. why is current layout not tidy
+- 160 rows because there are 10 ASEAN countries, 4 animal categories, and 4 years from 2018 to 2021
+
+**c. Why is current layout not tidy**
+
 - because years are spread across rows or sections instead of being one year column. 
 - animal types are arranged as repeated table blocks instead of being one animal column. 
 - contains aggregate rows or columns such as ASEAN totals and total meat production, which are summaries rather than observations
 
-**Bao Quan**  
-a. Columns:
-- country
-- animal_type
-- year
-- production
+### Bao Quan
 
-b. rows and why 
+**a. Columns and classes**
+
+- country (character)
+- animal (character)
+- year (numeric)
+- production (numeric)
+
+**b. Rows and why**
+
 - 4 years x 5 production x 11 countries = 176
-Years are being encoded and they have separate headers rather than being a column attribute.
+- Years are being encoded and they have separate headers rather than being a column attribute.
 
-c. why is current layout not tidy
+**c. Why is current layout not tidy**
+
 - Animal type is being split across multiple rows instead of being in a single var.
 - Countries are also being encoded rather than being in a single var.
 
 
-# Read CSV
+# 3.1 Read CSV
 ```{r}
 #| label: setup
 #| message: false
@@ -113,30 +134,31 @@ meat_raw
 ```{r}
 meat_tidy <- meat_raw |>
   rename(animal = `Animal Type`) |>
-  
+
   mutate(
     year = str_extract(as.character(animal), "^20[0-9]{2}$"),
     year = as.integer(year)
   ) |>
   fill(year) |>
-  
+
   filter(
-    animal %in% c(
-      "Beef and Buffalo Meat",
-      "Pig meat",
-      "Mutton and Goat Meat",
-      "Poultry meat"
-    )
+    animal %in%
+      c(
+        "Beef and Buffalo Meat",
+        "Pig meat",
+        "Mutton and Goat Meat",
+        "Poultry meat"
+      )
   ) |>
-  
+
   select(-ASEAN) |>
-  
+
   pivot_longer(
     cols = -c(year, animal),
     names_to = "country",
     values_to = "production"
   ) |>
-  
+
   mutate(
     animal = recode(
       animal,
@@ -147,7 +169,7 @@ meat_tidy <- meat_raw |>
     ),
     production = as.numeric(production)
   ) |>
-  
+
   select(year, animal, country, production) |>
   arrange(desc(year), animal, country)
 ```
@@ -165,7 +187,7 @@ nrow(meat_tidy)
 
 **Verifier Task:contains exactly the four product strings**
 ```{r}
-unique(meat_tidy$animal) 
+unique(meat_tidy$animal)
 ```
 
 
@@ -246,7 +268,7 @@ pop_tidy |>
   )
 ```
 
-# 3.7 Checkpoint
+# 3.7 Checkpoint: Compare pop_tidy to Reference Data
 ```{r}
 pop_ref <- read_csv(
   "population_tidy_reference.csv",
@@ -254,7 +276,6 @@ pop_ref <- read_csv(
 )
 
 compare(pop_tidy, pop_ref, tolerance = 1e-6)
-
 ```
 
 # 3.8 Join Meat Production to Population
@@ -274,7 +295,7 @@ compare(
 )
 ```
 
-# 3.9
+# 3.9 Derive Per-Capita Production
 ```{r}
 merged <- merged |>
   mutate(
@@ -290,44 +311,46 @@ merged |>
 merged_verifier <- merged |>
   select(country, animal, year, production, pop)
 
-merged_verifier$meat_per_cap <- merged_verifier$production / merged_verifier$pop * 1000
+merged_verifier$meat_per_cap <- merged_verifier$production /
+  merged_verifier$pop *
+  1000
 
 waldo::compare(merged, merged_verifier, tolerance = 1e-6)
 ```
 
 
-# 3.10
+# 3.10 Checkpoint: Compare meat_per_cap to Reference Data
 ```{r}
 merged_ref <- read_csv("merged_reference.csv")
 
 compare(merged, merged_ref, tolerance = 1e-6)
 ```
 
-# 3.11
+# 3.11 Visualize the Result
 ```{r}
 ggplot(
-merged,
-aes(x = year, y = meat_per_cap, color = animal)
+  merged,
+  aes(x = year, y = meat_per_cap, color = animal)
 ) +
-geom_line() +
-geom_point() +
-labs(
-x = NULL,
-y = "Production (kg per person)",
-color = "Animal",
-title = "Per-Capita Meat Production in ASEAN, 2018–2021",
-caption = "Source: ASEAN Statistical Yearbook 2023"
-) +
-xlim(2017.9, 2021.1) +
-scale_y_log10(
-breaks = c(0.01, 0.1, 1, 10, 100),
-labels = c("0.01", "0.1", "1", "10", "100")
-) +
-facet_wrap(~country) +
-theme(
-legend.position = "inside",
-legend.position.inside = c(1, 0),
-legend.justification.inside = c(1, 0.05)
-)
+  geom_line() +
+  geom_point() +
+  labs(
+    x = NULL,
+    y = "Production (kg per person)",
+    color = "Animal",
+    title = "Per-Capita Meat Production in ASEAN, 2018–2021",
+    caption = "Source: ASEAN Statistical Yearbook 2023"
+  ) +
+  xlim(2017.9, 2021.1) +
+  scale_y_log10(
+    breaks = c(0.01, 0.1, 1, 10, 100),
+    labels = c("0.01", "0.1", "1", "10", "100")
+  ) +
+  facet_wrap(~country) +
+  theme(
+    legend.position = "inside",
+    legend.position.inside = c(1, 0),
+    legend.justification.inside = c(1, 0.05)
+  )
 ```
 

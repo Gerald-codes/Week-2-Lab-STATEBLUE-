@@ -9,16 +9,6 @@ Philippines,beef and buffalo,2021,182.72524
 Singapore,beef and buffalo,2021,0.03425
 Thailand,beef and buffalo,2021,154.55376
 Viet Nam,beef and buffalo,2021,347.52345
-Brunei Darussalam,pig,2021,0.03135
-Cambodia,pig,2021,107.36374
-Indonesia,pig,2021,323.67
-Lao PDR,pig,2021,101.55963
-Malaysia,pig,2021,219.1786
-Myanmar,pig,2021,285
-Philippines,pig,2021,1187.30473
-Singapore,pig,2021,31.251
-Thailand,pig,2021,927.71694
-Viet Nam,pig,2021,2590
 Brunei Darussalam,mutton and goat,2021,0.07094
 Cambodia,mutton and goat,2021,NA
 Indonesia,mutton and goat,2021,117.588
@@ -29,6 +19,16 @@ Philippines,mutton and goat,2021,32.25285
 Singapore,mutton and goat,2021,0.03333
 Thailand,mutton and goat,2021,2.12822
 Viet Nam,mutton and goat,2021,21.34914
+Brunei Darussalam,pig,2021,0.03135
+Cambodia,pig,2021,107.36374
+Indonesia,pig,2021,323.67
+Lao PDR,pig,2021,101.55963
+Malaysia,pig,2021,219.1786
+Myanmar,pig,2021,285
+Philippines,pig,2021,1187.30473
+Singapore,pig,2021,31.251
+Thailand,pig,2021,927.71694
+Viet Nam,pig,2021,2590
 Brunei Darussalam,poultry,2021,31.59257
 Cambodia,poultry,2021,27.75546
 Indonesia,poultry,2021,3888.544
@@ -49,16 +49,6 @@ Philippines,beef and buffalo,2020,174.768
 Singapore,beef and buffalo,2020,0.035
 Thailand,beef and buffalo,2020,132.043
 Viet Nam,beef and buffalo,2020,470.343
-Brunei Darussalam,pig,2020,0.031
-Cambodia,pig,2020,93.196
-Indonesia,pig,2020,241.354
-Lao PDR,pig,2020,97.575
-Malaysia,pig,2020,221.325
-Myanmar,pig,2020,1127.135
-Philippines,pig,2020,1499.853
-Singapore,pig,2020,27.765
-Thailand,pig,2020,893.5
-Viet Nam,pig,2020,3550.105
 Brunei Darussalam,mutton and goat,2020,0.061
 Cambodia,mutton and goat,2020,NA
 Indonesia,mutton and goat,2020,136.747
@@ -69,6 +59,16 @@ Philippines,mutton and goat,2020,31.673
 Singapore,mutton and goat,2020,0.023
 Thailand,mutton and goat,2020,2.009
 Viet Nam,mutton and goat,2020,21.322
+Brunei Darussalam,pig,2020,0.031
+Cambodia,pig,2020,93.196
+Indonesia,pig,2020,241.354
+Lao PDR,pig,2020,97.575
+Malaysia,pig,2020,221.325
+Myanmar,pig,2020,1127.135
+Philippines,pig,2020,1499.853
+Singapore,pig,2020,27.765
+Thailand,pig,2020,893.5
+Viet Nam,pig,2020,3550.105
 Brunei Darussalam,poultry,2020,26.566
 Cambodia,poultry,2020,27.179
 Indonesia,poultry,2020,3752.238
@@ -89,16 +89,6 @@ Philippines,beef and buffalo,2019,200.643
 Singapore,beef and buffalo,2019,0.035
 Thailand,beef and buffalo,2019,162.905
 Viet Nam,beef and buffalo,2019,449.767
-Brunei Darussalam,pig,2019,0.032
-Cambodia,pig,2019,92.96
-Indonesia,pig,2019,236.277
-Lao PDR,pig,2019,93.109
-Malaysia,pig,2019,222.791
-Myanmar,pig,2019,1092.708
-Philippines,pig,2019,1607.656
-Singapore,pig,2019,22.852
-Thailand,pig,2019,895.38
-Viet Nam,pig,2019,3328.822
 Brunei Darussalam,mutton and goat,2019,0.048
 Cambodia,mutton and goat,2019,NA
 Indonesia,mutton and goat,2019,142.925
@@ -109,6 +99,16 @@ Philippines,mutton and goat,2019,33.715
 Singapore,mutton and goat,2019,0.023
 Thailand,mutton and goat,2019,1.994
 Viet Nam,mutton and goat,2019,20.993
+Brunei Darussalam,pig,2019,0.032
+Cambodia,pig,2019,92.96
+Indonesia,pig,2019,236.277
+Lao PDR,pig,2019,93.109
+Malaysia,pig,2019,222.791
+Myanmar,pig,2019,1092.708
+Philippines,pig,2019,1607.656
+Singapore,pig,2019,22.852
+Thailand,pig,2019,895.38
+Viet Nam,pig,2019,3328.822
 Brunei Darussalam,poultry,2019,24.813
 Cambodia,poultry,2019,27.895
 Indonesia,poultry,2019,3975.489
@@ -129,16 +129,6 @@ Philippines,beef and buffalo,2018,310.72
 Singapore,beef and buffalo,2018,0.047
 Thailand,beef and buffalo,2018,151.73
 Viet Nam,beef and buffalo,2018,426.582
-Brunei Darussalam,pig,2018,0.05
-Cambodia,pig,2018,86.48
-Indonesia,pig,2018,327.215
-Lao PDR,pig,2018,70.345
-Malaysia,pig,2018,186.012
-Myanmar,pig,2018,1063.087
-Philippines,pig,2018,1873.063
-Singapore,pig,2018,18.508
-Thailand,pig,2018,999.227
-Viet Nam,pig,2018,3816.414
 Brunei Darussalam,mutton and goat,2018,0.06
 Cambodia,mutton and goat,2018,NA
 Indonesia,mutton and goat,2018,115.533
@@ -149,6 +139,16 @@ Philippines,mutton and goat,2018,60.672
 Singapore,mutton and goat,2018,0.036
 Thailand,mutton and goat,2018,2.144
 Viet Nam,mutton and goat,2018,8.992
+Brunei Darussalam,pig,2018,0.05
+Cambodia,pig,2018,86.48
+Indonesia,pig,2018,327.215
+Lao PDR,pig,2018,70.345
+Malaysia,pig,2018,186.012
+Myanmar,pig,2018,1063.087
+Philippines,pig,2018,1873.063
+Singapore,pig,2018,18.508
+Thailand,pig,2018,999.227
+Viet Nam,pig,2018,3816.414
 Brunei Darussalam,poultry,2018,25.3
 Cambodia,poultry,2018,27.286
 Indonesia,poultry,2018,2588.164

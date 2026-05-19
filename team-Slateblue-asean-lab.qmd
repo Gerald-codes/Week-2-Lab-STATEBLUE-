@@ -1,5 +1,5 @@
 ---
-title: "Week 03 Lab: R Practice Using ASEAN Data"
+title: "Week 03 Lab: Tidying ASEAN Meat-Production Data"
 subtitle: "ASEAN Meat Production 2018–2021"
 author: "Team SLATEBLUE"
 date: "2026-05-19"
@@ -18,7 +18,7 @@ execute:
   message: false
 ---
 
-# Prediction Before Running Code
+# 3.1 Prediction Before Running Code
 ### Gerald  
 **a. Columns and classes:**
 
@@ -108,11 +108,15 @@ execute:
 - Animal type is being split across multiple rows instead of being in a single var.
 - Countries are also being encoded rather than being in a single var.
 
+## Team Summary of Predictions 
+The team predicted that the final tidy meat-production table should contain four main variables: `country`, `animal`, `year`, and `production`. After discussion, we agreed that the expected number of rows is 160 because the tidy table should include 10 ASEAN countries, 4 animal categories, and 4 years from 2018 to 2021. Some initial predictions included the ASEAN aggregate column or total production rows, but these were later excluded because they are summary values rather than individual observations.
 
-# 3.1 Read CSV
+
+# Setup 
 ```{r}
 #| label: setup
 #| message: false
+
 library(tidyverse)
 library(readxl)
 library(waldo)
@@ -120,6 +124,8 @@ library(waldo)
 
 # 3.2 Import the ASEAN Meat Production Data
 ```{r}
+#| label: import-meat-raw
+
 meat_raw <- read_xlsx(
   path = "ASEAN-Statistical-Yearbook-2023.xlsx",
   sheet = "X.14",
@@ -129,9 +135,12 @@ meat_raw <- read_xlsx(
 meat_raw
 ```
 
+We imported the relevant table from sheet X.14 using `read_xlsx()`. The selected range includes the animal-type column, the ten ASEAN country columns, and the ASEAN aggregate column. The aggregate column is kept during import so that the raw table remains close to the original spreadsheet, but it is removed during tidying because it is a derived total rather than an individual country observation.
 
 # 3.3 Tidy the Meat Production Data
 ```{r}
+#| label: tidy-meat-data
+
 meat_tidy <- meat_raw |>
   rename(animal = `Animal Type`) |>
 
@@ -170,30 +179,42 @@ meat_tidy <- meat_raw |>
     production = as.numeric(production)
   ) |>
 
-  select(year, animal, country, production) |>
+  select(country, animal, year, production) |>
   arrange(desc(year), animal, country)
 ```
 
 
 ```{r}
-head(meat_tidy, 6)
-tail(meat_tidy, 6)
+#| label: show-meat-tidy-rows
+
+slice_head(meat_tidy, n = 6)
+slice_tail(meat_tidy, n = 6)
 ```
 
 
 ```{r}
+#| label: check-meat-row-count
+
 nrow(meat_tidy)
 ```
 
-**Verifier Task:contains exactly the four product strings**
+**Verifier Task: contains exactly the four product strings**
 ```{r}
+#| label: check-meat-animal-values
+
 unique(meat_tidy$animal)
 ```
 
+The raw meat-production table was converted into tidy format by creating a `year` column from the year section rows, filling the year values downward, keeping only the four required animal categories, removing the ASEAN aggregate column, and pivoting the country columns into one `country` column. The animal names were standardised to lower-case labels so that they match the required values exactly.
+
+The resulting table has one row for each country, animal type, and year. The verifier checks confirm that the table has 160 rows and that the `animal` column contains only the four required values.
 
 # 3.4 Correct Cambodia’s Mutton-and-Goat Entries
 ```{r}
+#| label: correct-cambodia-mutton-goat
+
 meat_tidy_original <- meat_tidy
+
 meat_tidy <- meat_tidy_original |>
   mutate(
     production = if_else(
@@ -203,8 +224,17 @@ meat_tidy <- meat_tidy_original |>
     )
   )
 ```
-
 ```{r}
+#| label: show-cambodia-mutton-goat
+
+meat_tidy |>
+  filter(country == "Cambodia", animal == "mutton and goat")
+```
+
+**Verifier Task**
+```{r}
+#| label: verify-cambodia-correction
+
 meat_tidy_verifier <- meat_tidy_original
 
 meat_tidy_verifier[
@@ -216,9 +246,18 @@ meat_tidy_verifier[
 waldo::compare(meat_tidy, meat_tidy_verifier)
 ```
 
+Cambodia’s mutton-and-goat production values were changed from `0` to `NA` because the lab states that the PDF version records these entries as unavailable rather than true zero. The correction uses both `country == "Cambodia"` and `animal == "mutton and goat"` so that only the four affected rows are changed. Other zero values in the dataset are left unchanged.
+
+The verifier used a different replacement method with base R indexing and compared the result against the Coder’s tidyverse method. Since `waldo::compare()` reports no differences, both approaches produce the same corrected table.
+
 # 3.5 Checkpoint: Compare meat_tidy to Reference Data
 ```{r}
-meat_ref <- read_csv("meat_tidy_reference.csv")
+#| label: compare-meat-reference
+
+meat_ref <- read_csv(
+  "meat_tidy_reference.csv",
+  show_col_types = FALSE
+)
 
 meat_tidy <- meat_tidy |>
   select(country, animal, year, production)
@@ -228,6 +267,8 @@ compare(meat_tidy, meat_ref, tolerance = 1e-6)
 
 # 3.6 Tidy the Population Data
 ```{r}
+#| label: import-population-raw
+
 pop_raw <- read_excel(
   "ASEAN-Statistical-Yearbook-2023.xlsx",
   sheet = "I.1",
@@ -238,27 +279,34 @@ pop_raw <- read_excel(
 
 
 ```{r}
+#| label: tidy-population-data
+
 pop_tidy <- pop_raw |>
   pivot_longer(
     cols = -Country,
     names_to = "year",
-    values_to = "population"
-  ) |>
-  mutate(
-    year = as.integer(year),
-    population = as.numeric(population)
+    values_to = "pop"
   ) |>
   rename(
     country = Country
   ) |>
-  select(country, year, population) |>
+  mutate(
+    country = str_trim(country),
+    year = as.integer(year),
+    pop = as.numeric(pop)
+  ) |>
+  select(country, year, pop) |>
   arrange(desc(year), country)
+
 head(pop_tidy, 6)
 ```
 
+The population table was reshaped from wide to long format so that each row represents one country-year observation. The year columns were gathered into a single `year` column, and the population values were stored in `pop`. The country names were cleaned using `str_trim()` to remove leading or trailing spaces, including the trailing space in `"Malaysia "`.
 
 **Verifier Task**
 ```{r}
+#| label: verify-malaysia-space
+
 pop_tidy |>
   filter(str_detect(country, "Malaysia")) |>
   distinct(country) |>
@@ -268,8 +316,12 @@ pop_tidy |>
   )
 ```
 
+The trailing space is not present in `pop_tidy$country` because `str_trim(country)` removes whitespace from the beginning and end of each country name. Therefore, `"Malaysia "` becomes `"Malaysia"` before the final table is sorted and compared.
+
 # 3.7 Checkpoint: Compare pop_tidy to Reference Data
 ```{r}
+#| label: compare-population-reference
+
 pop_ref <- read_csv(
   "population_tidy_reference.csv",
   show_col_types = FALSE
@@ -280,15 +332,20 @@ compare(pop_tidy, pop_ref, tolerance = 1e-6)
 
 # 3.8 Join Meat Production to Population
 ```{r}
+#| label: join-meat-population
+
 merged <- meat_tidy |>
   left_join(pop_tidy, by = c("country", "year")) |>
-  rename(pop = population) |>
   select(country, animal, year, production, pop)
 merged
 ```
 
+We used `left_join()` to preserve every row from `meat_tidy` while adding the matching population value from `pop_tidy` using both `country` and `year` as keys. This is appropriate because the meat-production table is the main dataset, and the population values are needed only to calculate per-capita production.
+
 **verifier**
 ```{r}
+#| label: verify-join-order
+
 compare(
   merged |> select(country, animal, year, production),
   meat_tidy
@@ -297,6 +354,8 @@ compare(
 
 # 3.9 Derive Per-Capita Production
 ```{r}
+#| label: calculate-per-capita
+
 merged <- merged |>
   mutate(
     meat_per_cap = production / pop * 1000
@@ -306,8 +365,12 @@ merged |>
   filter(country == "Cambodia", animal == "mutton and goat")
 ```
 
+The new variable `meat_per_cap` represents meat production in kilograms per person. Since production is measured in thousand metric tons and population is measured in thousands of people, the conversion is `production / pop * 1000`. Rows with missing production values, such as Cambodia’s mutton-and-goat entries, remain missing after the calculation.
+
 **verifier**
 ```{r}
+#| label: verify-per-capita
+
 merged_verifier <- merged |>
   select(country, animal, year, production, pop)
 
@@ -321,13 +384,17 @@ waldo::compare(merged, merged_verifier, tolerance = 1e-6)
 
 # 3.10 Checkpoint: Compare meat_per_cap to Reference Data
 ```{r}
-merged_ref <- read_csv("merged_reference.csv")
+#| label: compare-merged-reference
+
+merged_ref <- read_csv("merged_reference.csv",  show_col_types = FALSE)
 
 compare(merged, merged_ref, tolerance = 1e-6)
 ```
 
 # 3.11 Visualize the Result
 ```{r}
+#| label: plot-per-capita-meat 
+
 ggplot(
   merged,
   aes(x = year, y = meat_per_cap, color = animal)
@@ -354,3 +421,28 @@ ggplot(
   )
 ```
 
+# 3.12 Comment on Plot
+One noteworthy pattern is that poultry production per person is generally much higher than mutton-and-goat production across many ASEAN countries. This can be seen from the poultry lines, which are usually above the mutton-and-goat lines in most country panels. However, these values should be interpreted as production per person rather than consumption per person, because the calculation does not account for imports, exports, or stock changes.
+
+Source: ASEAN Secretariat (2023), ASEAN Statistical Yearbook 2023.
+
+# 4.1 Reflect on AI Use
+Our team used ChatGPT as the chosen chat-based AI tool for this lab. One useful AI suggestion was to use `pivot_longer()` to reshape the country columns into a single `country` column. This helped us convert the spreadsheet layout into tidy format.
+
+One AI response that required checking was the handling of Cambodia’s mutton-and-goat values. The team verified the lab instruction and confirmed that the values should be `NA`, not zero, because the PDF source indicates that they were unavailable at the time of publication. We corrected this by replacing only the rows where `country == "Cambodia"` and `animal == "mutton and goat"`.
+
+# 4.2 Roles and Contributions 
+- **Adam: Coder**  
+  Adam typed and edited the canonical QMD file, managed the code chunks, ensured that the file paths were project-relative, and rendered the final HTML output.
+
+- **Bao Quan: AI Liaison**  
+  Bao Quan used the team’s chosen chat-based AI tool, recorded the AI interactions in the AI log, identified useful AI suggestions, and checked for any AI responses that were incorrect, incomplete, or unsuitable for the lab requirements.
+
+- **Jun Kiat: Navigator**  
+  Jun Kiat read the task requirements, kept the team on track, guided the overall coding strategy, and checked that all required sections of the lab were attempted.
+
+- **Jia Jia: Constructive Critic and Reporter**  
+  Jia Jia reviewed the explanatory text, verifier notes, AI-related comments, and final QMD structure for clarity, language, formatting, and completeness. Jia Jia also prepared the Markdown explanations and was responsible for explaining the transformation steps, AI use, and verification reasoning during the checkpoint.
+
+- **Gerald: Verifier**  
+  Gerald checked that the cleaned data had the expected rows, columns, units, missing values, and join behaviour. Gerald also reviewed the verifier tasks, including row counts, animal categories, Cambodia’s missing values, Malaysia’s trailing space, join order, and the `waldo::compare()` outputs.
